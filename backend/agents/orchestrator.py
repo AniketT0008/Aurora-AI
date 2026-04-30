@@ -288,9 +288,9 @@ def generate_deterministic_decision(question, agents, profile_data):
             alts.append("Implement 90-minute deep work blocks with 30-minute recovery cycles.")
         else:
             if agents['productivity']['focus_score'] > 80 and b['burnout_risk_score'] < 30 and f['risk_score'] < 30:
-                decisions.append("REST" if (is_choice or is_open) else "YES")
-                whys.append(f"Your system is highly optimized (instability {inst}/100) and you've put in the work. You have earned a break. Go out and enjoy yourself.")
-                alts.append("Use this time to completely disconnect from work and recharge.")
+                decisions.append("UNSURE")
+                whys.append(f"Your system is highly optimized (instability {inst}/100), but before I decide: when was the last time you took a real break?")
+                alts.append("If it's been a while, you should REST. If you just had a break, keep the momentum and STUDY/WORK.")
             else:
                 decisions.append("STUDY" if (is_choice or is_open) else "YES")
                 whys.append(f"Your system is balanced (instability {inst}/100). Lean into deep work — you have the biological and financial runway for it.")
