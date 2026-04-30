@@ -46,7 +46,6 @@ async def serve_index():
 
 PROFILE_DATA_PATH  = os.path.join(os.path.dirname(__file__), "data", "sample_profile.json")
 USER_PROFILE_PATH  = os.path.join(os.path.dirname(__file__), "data", "user_account.json")
-DEBUG_LOG_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "debug-4f7956.log"))
 GEMINI_API_KEY  = os.getenv("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY_1") or os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL  = os.getenv( "GEMINI_MODEL", "gemini-1.5-flash" ) 
 OCR_ENGINE = None
@@ -66,21 +65,6 @@ if os.path.exists(USER_PROFILE_PATH):
     try: os.remove(USER_PROFILE_PATH)
     except: pass  
 
-def debug_log(hypothesis_id: str, location: str, message: str, data: dict, run_id: str = "baseline"):
-    payload = {   
-        "sessionId": "4f7956",
-        "runId": run_id,
-        "hypothesisId": hypothesis_id, 
-        "location": location,   
-        "message": message,
-        "data": data,
-        "timestamp": int(__import__("time").time() * 1000)
-    } 
-    try:
-        with open(DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
-            f.write(json.dumps(payload) + "\n")
-    except Exception:
-        pass 
 
 def _extract_json_block( text: str ) -> Optional[dict]:
     if not text:
