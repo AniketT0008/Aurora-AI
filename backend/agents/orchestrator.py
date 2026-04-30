@@ -277,18 +277,24 @@ def generate_deterministic_decision(question, agents, profile_data):
     # 3. Focus/Productivity intent
     if any(w in q for w in ["focus", "study", "learn", "learning", "work", "prioritize", "week", "exam", "course"]):
         is_choice = " or " in q or " vs " in q
+        is_open = "what" in q or "how" in q
         if f['risk_score'] > 60:
-            decisions.append("COURSE CORRECTION")
+            decisions.append("EARN" if (is_choice or is_open) else "COURSE CORRECTION")
             whys.append(f"Financial pressure (risk {f['risk_score']}/100) is your #1 bottleneck. Focus energy on income generation and expense reduction.")
             alts.append(f"Dedicate 2 hours/day to income-generating activities until monthly surplus exceeds ${max(500, income * 0.15):,.0f}.")
         elif b['burnout_risk_score'] > 60:
-            decisions.append("TAKE A BREAK" if is_choice else "CAUTION")
+            decisions.append("REST" if (is_choice or is_open) else "CAUTION")
             whys.append(f"Burnout risk is {b['burnout_risk_score']}/100. Pushing harder will reduce output. Prioritize recovery first.")
             alts.append("Implement 90-minute deep work blocks with 30-minute recovery cycles.")
         else:
-            decisions.append("STUDY" if is_choice else "YES")
-            whys.append(f"Your system is balanced (instability {inst}/100). Lean into deep work — you have the biological and financial runway for it.")
-            alts.append(f"Target {min(8, agents['productivity']['focus_score'] / 10 + 2):.0f} hours of deep work this week.")
+            if agents['productivity']['focus_score'] > 80 and b['burnout_risk_score'] < 30 and f['risk_score'] < 30:
+                decisions.append("REST" if (is_choice or is_open) else "YES")
+                whys.append(f"Your system is highly optimized (instability {inst}/100) and you've put in the work. You have earned a break. Go out and enjoy yourself.")
+                alts.append("Use this time to completely disconnect from work and recharge.")
+            else:
+                decisions.append("STUDY" if (is_choice or is_open) else "YES")
+                whys.append(f"Your system is balanced (instability {inst}/100). Lean into deep work — you have the biological and financial runway for it.")
+                alts.append(f"Target {min(8, agents['productivity']['focus_score'] / 10 + 2):.0f} hours of deep work this week.")
 
     # 4. Final Aggregation
     if not decisions:
