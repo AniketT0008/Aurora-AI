@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURORA AI - Personal Decision Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(51, 65, 85, 0.6);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #818cf8, #e879f9);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-glass {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .input-glass:focus {
+            border-color: #818cf8;
+            outline: none;
+        }
+
+        .input-profile {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(71, 85, 105, 0.8);
+            color: white;
+            padding: 0.6rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            font-size: 0.875rem;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+</head>
+
+<body class="min-h-screen flex flex-col pb-10">
+
+    <div id="onboarding-modal"
+        class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[100] flex items-center justify-center">
+        <div class="glass-dark border border-indigo-500/30 p-10 rounded-3xl w-full max-w-2xl shadow-2xl text-center">
+            <h1 class="text-4xl font-black gradient-text mb-4">WELCOME TO AURORA AI</h1>
+            <p class="text-lg text-slate-300 mb-8">
+                Aurora helps you make better life decisions using AI.<br><br>
+                It analyzes your <b>money, productivity, learning, and behavior</b><br>
+                and tells you exactly what to do next.
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 text-left mb-8 max-w-lg mx-auto">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                    <span class="text-indigo-400 font-bold block mb-1">Step 1</span> Create Profile
+
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                    <span class="text-indigo-400 font-bold block mb-1">Step 2</span> Upload Life Data
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                    <span class="text-indigo-400 font-bold block mb-1">Step 3</span> Ask Aurora
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                    <span class="text-indigo-400 font-bold block mb-1">Step 4</span> See Future Simulation
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 max-w-md mx-auto">
+                <button onclick="startApp()"
+                    class="w-full bg-indigo-600 py-4 rounded-xl font-black text-lg hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/20">Get
+                    Started</button>
+                <div class="grid grid-cols-3 gap-2 mt-4">
+                    <button onclick="loadDemoProfile('student')"
+                        class="bg-slate-800 hover:bg-slate-700 py-3 px-2 rounded-lg text-xs font-bold transition">Burned
+                        Out Student</button>
+                    <button onclick="loadDemoProfile('founder')"
+                        class="bg-slate-800 hover:bg-slate-700 py-3 px-2 rounded-lg text-xs font-bold transition">Overspending
+                        Founder</button>
+                    <button onclick="loadDemoProfile('high_performer')"
+                        class="bg-slate-800 hover:bg-slate-700 py-3 px-2 rounded-lg text-xs font-bold transition">High
+                        Performer</button>
+                </div>
+
+                <button onclick="document.getElementById('onboarding-modal').style.display = 'none'"
+                    class="mt-2 text-xs text-slate-400 hover:text-white transition underline">Skip Demo &rarr; Go
+                    directly to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-xl p-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <h1 class="text-2xl font-black tracking-widest gradient-text flex items-center gap-2">
+                    <svg class="w-6 h-6 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    AURORA AI
+                </h1>
+
+                <div class="hidden md:flex text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    <span class="text-indigo-400">Decision Intelligence Platform</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 glass-dark px-4 py-2 rounded-full cursor-pointer hover:bg-slate-800 transition shadow-lg shadow-indigo-900/20"
+                onclick="editProfile()">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-sm shadow-inner text-white"
+                    id="prof-initial">A</div>
+                <div>
+                    <p class="text-sm font-bold leading-tight text-white" id="prof-name">Alex Founder</p>
+                    <p class="text-xs text-indigo-300 leading-tight" id="prof-goal">Career Growth</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto mt-6 px-4 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
+
+        <div class="lg:col-span-3 space-y-6">
+
+            <div
+                class="glass-dark rounded-2xl p-5 border-dashed border-2 border-indigo-500/30 hover:border-indigo-400 transition relative overflow-hidden group">
+                <div class="absolute inset-0 bg-indigo-500/5 group-hover:bg-indigo-500/10 transition"></div>
+                <h3
+                    class="text-sm font-bold text-indigo-400 uppercase tracking-wider mb-2 z-10 relative flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    AI Document Extraction
+                </h3>
+                <p class="text-xs text-slate-400 mb-2 z-10 relative">Supported Files: PDF, CSV, Excel, JPG, PNG</p>
+                <ul class="text-xs text-slate-500 mb-4 z-10 relative list-disc pl-4">
+                    <li>Bank Statements</li>
+                    <li>Expense Reports</li>
+                    <li>Productivity Logs</li>
+                </ul>
+
+                <input type="file" id="fileUpload" accept=".pdf,.csv,.jpg,.jpeg,.png" class="hidden"
+                    onchange="handleFileUpload(event)">
+                <label for="fileUpload"
+                    class="block w-full py-3 text-center bg-indigo-600/20 text-indigo-300 rounded-lg cursor-pointer hover:bg-indigo-600/40 font-semibold text-sm transition z-10 relative shadow-inner">
+                    Select Document
+                </label>
+                <div id="upload-status"
+                    class="mt-4 text-xs hidden z-10 relative bg-slate-900/80 p-3 rounded-lg border border-slate-700">
+                </div>
+            </div>
+
+            <div class="glass rounded-2xl p-5">
+                <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4">Current Life State</h3>
+                <div class="space-y-3">
+                    <div><label class="block text-xs text-slate-400 mb-1">Monthly Income ($)</label><input type="number"
+                            id="inp-income" class="w-full input-glass rounded p-2 text-sm" value="5000" onclick="this.select()"></div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Monthly Expenses ($)</label><input
+                            type="number" id="inp-expenses" class="w-full input-glass rounded p-2 text-sm" value="4200" onclick="this.select()">
+                    </div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Idle Cash / Bank Balance ($,
+                            Optional)</label><input type="number" id="inp-idle-cash"
+                            class="w-full input-glass rounded p-2 text-sm" value="0" onclick="this.select()"></div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Itemized / Recent Expenses (Optional)</label>
+                        <textarea id="inp-itemized" class="w-full input-glass rounded p-2 text-sm h-16 scrollbar-hide"
+                            oninput="syncExpensesFromItemized()" placeholder="e.g. Rent: 1200 or just 1200" onclick="this.select()"></textarea>
+                        <label class="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                            <input id="inp-itemized-sync" type="checkbox" class="accent-indigo-500">
+                            Use itemized list as monthly expense total
+                        </label>
+                    </div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Deep Work (Hours/Day)</label><input
+                            type="number" id="inp-deep" class="w-full input-glass rounded p-2 text-sm" value="3" onclick="this.select()"></div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Screen Time (Hours/Day)</label><input
+                            type="number" id="inp-screen" class="w-full input-glass rounded p-2 text-sm" value="6" onclick="this.select()">
+                    </div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Sleep (Hours/Night)</label><input
+                            type="number" id="inp-sleep" class="w-full input-glass rounded p-2 text-sm" value="6.5" onclick="this.select()">
+                    </div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Exercise Days (per week,
+                            Optional)</label><input type="number" id="inp-exercise-days"
+                            class="w-full input-glass rounded p-2 text-sm" value="2" onclick="this.select()"></div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Workout Time (mins/day,
+                            Optional)</label><input type="number" id="inp-workout-mins"
+                            class="w-full input-glass rounded p-2 text-sm" value="30" onclick="this.select()"></div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Daily Habits Notes (Optional)</label>
+                        <textarea id="inp-habits" class="w-full input-glass rounded p-2 text-sm h-16 scrollbar-hide"
+                            placeholder="e.g. Walk: 35 mins&#10;Meditation: 10 mins&#10;Water: 2L" onclick="this.select()"></textarea>
+                    </div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Learning (Hours/Week)</label><input type="number" id="inp-learning-hours" class="w-full input-glass rounded p-2 text-sm" value="5" onclick="this.select()"></div>
+                    <div><label class="block text-xs text-slate-400 mb-1">Learning Focus</label><input type="text"
+                            id="inp-focus" class="w-full input-glass rounded p-2 text-sm" value="System Design" onclick="this.select()"></div>
+                </div>
+                <button onclick="applyChangesAndAnalyze()" id="btn-apply"
+                    class="w-full mt-5 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-lg font-bold shadow-lg shadow-indigo-500/20 transition flex justify-center items-center gap-2">
+                    <span>Apply Changes & Analyze</span>
+                </button>
+                <p id="api-status" class="text-xs text-rose-400 mt-2 hidden"></p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-6 flex flex-col gap-6">
+
+            <div class="grid grid-cols-2 gap-4">
+                <div
+                    class="glass rounded-2xl p-5 flex flex-col justify-center items-center text-center relative overflow-hidden">
+                    <div id="risk-score-top-bar" class="absolute top-0 w-full h-1 bg-emerald-500"></div>
+                    <h3 id="risk-score-title" class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1">
+                        Life Instability Index</h3>
+                    <div class="flex items-baseline gap-1">
+                        <span id="risk-score" class="text-5xl font-black text-emerald-400">0</span><span
+                            class="text-sm text-slate-400">/100</span>
+                    </div>
+
+                    <div id="risk-score-insights"
+                        class="hidden mt-3 pt-3 border-t border-slate-700/50 w-full text-left">
+                        <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-2">Primary Risk
+                            Drivers</p>
+                        <ul id="risk-explanation-list" class="space-y-1.5"></ul>
+                    </div>
+                </div>
+                <div
+                    class="glass rounded-2xl p-5 flex flex-col justify-center items-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 w-full h-1 bg-purple-500"></div>
+                    <h3 class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2">Personality Profile
+                    </h3>
+                    <span id="personality-profile" class="text-lg font-bold text-white leading-tight">Balanced
+                        Performer</span>
+                </div>
+            </div>
+
+            <div
+                class="glass-dark rounded-3xl p-1 relative shadow-2xl shadow-indigo-900/50 flex-1 flex flex-col min-h-[400px]">
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-transparent rounded-3xl pointer-events-none">
+                </div>
+
+                <div class="p-6 pb-2 z-10">
+                    <h2 class="text-2xl font-black mb-1 flex items-center gap-2">
+                        <span class="text-indigo-400">Ask Aurora</span>
+                    </h2>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                        Your autonomous life strategist. Ask a question and our multi-agent system will resolve
+                        conflicts across your entire life system.
+                    </p>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div
+                            class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 text-[10px] text-slate-300">
+                            <span class="text-emerald-400 font-bold block mb-1">FINANCE AGENT</span>
+                            Monitors cashflow, runway, and purchase affordability.
+                        </div>
+                        <div
+                            class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 text-[10px] text-slate-300">
+                            <span class="text-blue-400 font-bold block mb-1">PROD AGENT</span>
+                            Tracks deep work efficiency and screen-time fatigue.
+                        </div>
+                        <div
+                            class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 text-[10px] text-slate-300">
+                            <span class="text-purple-400 font-bold block mb-1">BIO-BEHAVIOR AGENT</span>
+                            Analyzes sleep debt and burnout risk thresholds.
+                        </div>
+                        <div
+                            class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 text-[10px] text-slate-300">
+                            <span class="text-amber-400 font-bold block mb-1">LEARNING AGENT</span>
+                            Ensures long-term skill goals are not sacrificed for short-term gain.
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-500 italic">
+                        Aurora debates your request internally. Each agent votes based on its specialized domain to
+                        render an objective verdict.
+                    </p>
+                </div>
+
+                <div id="decision-result" class="px-6 py-4 flex-1 flex flex-col justify-end space-y-4 hidden z-10">
+                    <div class="bg-indigo-900/40 border border-indigo-500/30 rounded-2xl p-5 animate-fade-in shadow-xl">
+                        <p class="text-xs text-indigo-300 font-bold uppercase tracking-wider mb-2">Aurora's Verdict</p>
+                        <p id="verdict-text" class="text-2xl font-black text-white mb-2"></p>
+                        <p id="verdict-rec" class="text-slate-200 text-lg mb-2"></p>
+                        <p id="verdict-alt" class="text-slate-400 text-sm italic"></p>
+
+                        <div class="mt-4 pt-4 border-t border-indigo-500/20">
+                            <p class="text-xs text-emerald-400 font-bold uppercase mb-1">30-Day Consequence</p>
+                            <p id="verdict-pred" class="text-sm text-emerald-100 font-semibold"></p>
+                        </div>
+
+                        <div id="comparison-mode" class="mt-4 pt-4 border-t border-indigo-500/20 hidden">
+                            <p class="text-xs text-amber-400 font-bold uppercase mb-2">Decision Comparison</p>
+                            <div class="flex gap-4">
+                                <div class="flex-1 bg-slate-900/50 rounded-lg p-2 text-center border border-slate-700">
+                                    <span id="label-a" class="block text-xs text-slate-400">Option A</span><span id="opt-a"
+                                        class="font-bold">--</span></div>
+                                <div class="flex-1 bg-slate-900/50 rounded-lg p-2 text-center border border-slate-700">
+                                    <span id="label-b" class="block text-xs text-slate-400">Option B</span><span id="opt-b"
+                                        class="font-bold">--</span></div>
+                            </div>
+                            <p id="comp-analysis" class="text-xs text-slate-400 mt-2"></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2" id="verdict-reasoning"></div>
+                </div>
+
+                <div class="p-4 mt-auto z-10">
+                    <div
+                        class="flex gap-2 bg-slate-900 border border-slate-700 rounded-2xl p-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition">
+                        <input id="question" type="text"
+                            placeholder="e.g., Should I buy a new laptop? / Go out vs Study?"
+                            class="flex-1 bg-transparent px-4 py-3 focus:outline-none text-white placeholder-slate-500">
+                        <button onclick="askAurora()" id="btn-ask"
+                            class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold transition shadow-md disabled:opacity-50">
+                            Analyze
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mt-3 justify-center">
+                        <button onclick="setQuestion('Should I go out this weekend?')"
+                            class="text-xs bg-slate-800/80 text-indigo-300 px-3 py-1.5 rounded-full hover:bg-indigo-900 hover:text-indigo-200 transition border border-indigo-500/20 shadow-sm">Should
+                            I go out this weekend?</button>
+                        <button onclick="setQuestion('Should I buy a new laptop?')"
+                            class="text-xs bg-slate-800/80 text-indigo-300 px-3 py-1.5 rounded-full hover:bg-indigo-900 hover:text-indigo-200 transition border border-indigo-500/20 shadow-sm">Should
+                            I buy a new laptop?</button>
+                        <button onclick="setQuestion('What should I focus on this week?')"
+                            class="text-xs bg-slate-800/80 text-indigo-300 px-3 py-1.5 rounded-full hover:bg-indigo-900 hover:text-indigo-200 transition border border-indigo-500/20 shadow-sm">What
+                            should I focus on this week?</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-3" id="agent-grid">
+
+            </div>
+        </div>
+
+        <div class="lg:col-span-3 flex flex-col gap-6">
+
+            <div class="glass border-emerald-500/20 rounded-2xl p-5 relative overflow-hidden flex-1">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <span>🔮</span> 30-Day Simulation
+                </h3>
+                <p id="simulation" class="text-slate-300 text-sm leading-relaxed">System initialized. Awaiting user data
+                    sequence.</p>
+            </div>
+
+            <div class="glass border-amber-500/20 rounded-2xl p-5 flex-1">
+                <h3 class="text-sm font-bold text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    5-Day Optimization
+                </h3>
+                <ul id="optimization-plan" class="space-y-3">
+                    <li class="text-sm text-slate-400">Run analysis to generate your personal action plan.</li>
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="profile-modal"
+        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center overflow-y-auto pt-20 pb-10">
+        <div class="glass-dark border border-slate-700 p-8 rounded-2xl w-full max-w-lg shadow-2xl relative">
+            <h2 class="text-2xl font-black mb-6 border-b border-slate-700 pb-3">Complete Your Life Profile</h2>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2"><label class="block text-xs text-slate-400 mb-1">Full Name</label><input
+                        type="text" id="prof-inp-name" class="input-profile" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Age (Number)</label><input type="number"
+                        id="prof-inp-age" class="input-profile" onclick="this.select()"></div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Work / Study Type</label>
+                    <select id="prof-inp-work" class="input-profile">
+                        <option>University Student</option>
+                        <option>Working Professional</option>
+                        <option>Founder</option>
+                        <option>Freelancer</option>
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs text-slate-400 mb-1">Primary Goal</label>
+                    <select id="prof-inp-goal" class="input-profile">
+                        <option>Internship Search</option>
+                        <option>Exam Preparation</option>
+                        <option>Career Growth</option>
+                        <option>Saving Money</option>
+                        <option>Startup Building</option>
+                        <option>Health Improvement</option>
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs text-slate-400 mb-1">Current Biggest Challenge</label>
+                    <select id="prof-inp-challenge" class="input-profile">
+                        <option>Burnout</option>
+                        <option>Overspending</option>
+                        <option>Lack of Focus</option>
+                        <option>Poor Sleep</option>
+                        <option>Time Management</option>
+                        <option>Inconsistency</option>
+                    </select>
+                </div>
+                <div><label class="block text-xs text-slate-400 mb-1">Weekly Stress Level (1-10)</label><input
+                        type="number" min="1" max="10" id="prof-inp-stress" class="input-profile" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Financial Confidence (1-10)</label><input
+                        type="number" min="1" max="10" id="prof-inp-finance" class="input-profile" onclick="this.select()"></div>
+                <div class="col-span-2">
+                    <label class="block text-xs text-slate-400 mb-1">Preferred Decision Style</label>
+                    <select id="prof-inp-style" class="input-profile">
+                        <option>Aggressive Growth</option>
+                        <option>Balanced</option>
+                        <option>Conservative / Safe</option>
+                    </select>
+                </div>
+                <div><label class="block text-xs text-slate-400 mb-1">Monthly Income ($)</label><input type="number"
+                        id="prof-inp-monthly-income" class="input-profile" min="0" step="0.01" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Monthly Expenses ($)</label><input type="number"
+                        id="prof-inp-monthly-expenses" class="input-profile" min="0" step="0.01" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Current Bank Balance ($)</label><input
+                        type="number" id="prof-inp-bank-balance" class="input-profile" min="0" step="0.01" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Deep Work (Hours/Day)</label><input type="number"
+                        id="prof-inp-deep-work-hours" class="input-profile" min="0" step="0.1" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Screen Time (Hours/Day)</label><input
+                        type="number" id="prof-inp-screen-time-hours" class="input-profile" min="0" step="0.1" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Sleep (Hours/Night)</label><input type="number"
+                        id="prof-inp-sleep-hours" class="input-profile" min="0" step="0.1" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Exercise Days (per week, Optional)</label><input
+                        type="number" id="prof-inp-exercise-days" class="input-profile" min="0" step="1" onclick="this.select()"></div>
+                <div><label class="block text-xs text-slate-400 mb-1">Workout Time (mins/day, Optional)</label><input
+                        type="number" id="prof-inp-workout-mins" class="input-profile" min="0" step="1" onclick="this.select()"></div>
+                <div class="col-span-2"><label class="block text-xs text-slate-400 mb-1">Daily Habits Notes
+                        (Optional)</label><textarea id="prof-inp-habits" class="input-profile" rows="2"
+                        placeholder="Short notes" onclick="this.select()"></textarea></div>
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button onclick="saveProfile()" id="btn-save-prof"
+                    class="flex-1 bg-indigo-600 py-3 rounded-lg font-bold hover:bg-indigo-500 transition shadow-lg">Save
+                    Profile</button>
+                <button onclick="document.getElementById('profile-modal').classList.add('hidden')"
+                    class="flex-1 bg-slate-700 py-3 rounded-lg font-bold hover:bg-slate-600 transition">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        let onboardingComplete = false;
+
+        let inactivityTimer;
+        window.demoModeActive = false;
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                if (window.demoModeActive) {
+                    alert("Please click the profile button on the top right to update your values and make it personalized!");
+                    window.demoModeActive = false;
+                }
+            }, 5000);
+        }
+
+        fetch('/api/reset').then(() => {
+            console.log("Demo session reset initiated.");
+        });
+        document.addEventListener('mousemove', resetInactivityTimer);
+        document.addEventListener('keydown', resetInactivityTimer);
+        document.addEventListener('click', resetInactivityTimer);
+
+        function setApiStatus(message = '') {
+            const el = document.getElementById('api-status');
+            if (!message) {
+                el.classList.add('hidden');
+                el.innerText = '';
+                return;
+            }
+            el.classList.remove('hidden');
+            el.innerText = message;
+        }
+
+        document.addEventListener('wheel', function (e) {
+            if (e.target.type === 'number') {
+                e.target.blur();
+            }
+        });
+
+        function getProfileState() {
+            const moneyNum = (id) => {
+                const raw = String(document.getElementById(id).value || '').replace(/,/g, '').trim();
+                const n = Number(raw);
+                return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
+            };
+            const num = (id) => {
+                const raw = String(document.getElementById(id).value || '').replace(/,/g, '').trim();
+                const n = Number(raw);
+                return Number.isFinite(n) ? n : 0;
+            };
+            return {
+                finance: {
+                    monthly_income: moneyNum('inp-income'),
+                    monthly_expenses: moneyNum('inp-expenses'),
+                    idle_cash: moneyNum('inp-idle-cash'),
+                    itemized_expenses: document.getElementById('inp-itemized').value,
+                    itemized_sync_enabled: document.getElementById('inp-itemized-sync').checked
+                },
+                productivity: {
+                    deep_work_hours: num('inp-deep'),
+                    daily_screen_time_hours: num('inp-screen')
+                },
+                behavior: {
+                    sleep_hours_avg: num('inp-sleep'),
+                    exercise_days_per_week: num('inp-exercise-days'),
+                    workout_minutes_per_day: num('inp-workout-mins'),
+                    daily_habits_notes: document.getElementById('inp-habits').value
+                },
+                learning: {
+                    hours_per_week: num('inp-learning-hours'),
+                    current_focus: document.getElementById('inp-focus').value
+                }
+            };
+        }
+
+        function parseItemizedTotal(text) {
+            if (!text) return 0;
+            const lines = text.split('\n');
+            let total = 0;
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+                // Match the last number in the line
+                const nums = trimmed.match(/\d+\.?\d*/g);
+                if (!nums) continue;
+                const val = parseFloat(nums[nums.length - 1]) || 0;
+                // Sanity check: don't add massive outlier numbers that might be dates/IDs
+                if (val <= 0 || val > 100000) continue;
+                total += val;
+            }
+            return total;
+        }
+
+        function syncExpensesFromItemized() {
+            const syncEnabled = document.getElementById('inp-itemized-sync').checked;
+            if (!syncEnabled) return;
+            const itemized = document.getElementById('inp-itemized').value;
+            const total = parseItemizedTotal(itemized);
+            if (total > 0) {
+                document.getElementById('inp-expenses').value = total.toFixed(2);
+            }
+        }
+
+        function setQuestion(q) {
+            document.getElementById('question').value = q;
+            askAurora();
+        }
+
+        function startApp() {
+            document.getElementById('onboarding-modal').style.display = 'none';
+            fetchAccount().then(() => {
+                onboardingComplete = false;
+                document.getElementById('profile-modal').classList.remove('hidden');
+            });
+        }
+
+        async function loadDemoProfile(type) {
+            document.getElementById('onboarding-modal').style.display = 'none';
+            if (type === 'student') {
+                document.getElementById('inp-income').value = 2500;
+                document.getElementById('inp-expenses').value = 2400;
+                document.getElementById('inp-itemized').value = "Uber: 120\nEnergy Drinks: 40\nLate Night Food: 200";
+                document.getElementById('inp-deep').value = 2;
+                document.getElementById('inp-screen').value = 8;
+                document.getElementById('inp-sleep').value = 5.5;
+                document.getElementById('inp-focus').value = "Internship Search";
+                document.getElementById('prof-inp-goal').value = "Internship Search";
+                document.getElementById('prof-inp-challenge').value = "Burnout";
+            } else if (type === 'founder') {
+                document.getElementById('inp-income').value = 8000;
+                document.getElementById('inp-expenses').value = 7600;
+                document.getElementById('inp-itemized').value = "Software Subs: 450\nBusiness Dinners: 800\nCoffee: 150";
+                document.getElementById('inp-deep').value = 6;
+                document.getElementById('inp-screen').value = 7;
+                document.getElementById('inp-sleep').value = 6;
+                document.getElementById('inp-focus').value = "Startup Growth";
+                document.getElementById('prof-inp-goal').value = "Startup Building";
+                document.getElementById('prof-inp-challenge').value = "Overspending";
+            } else if (type === 'high_performer') {
+                document.getElementById('inp-income').value = 7000;
+                document.getElementById('inp-expenses').value = 3500;
+                document.getElementById('inp-itemized').value = "Gym: 50\nBooks: 40\nGroceries: 400";
+                document.getElementById('inp-deep').value = 6;
+                document.getElementById('inp-screen').value = 3;
+                document.getElementById('inp-sleep').value = 8;
+                document.getElementById('inp-focus').value = "Career Growth";
+                document.getElementById('prof-inp-goal').value = "Career Growth";
+                document.getElementById('prof-inp-challenge').value = "Time Management";
+            }
+            onboardingComplete = true;
+            window.demoModeActive = true;
+            resetInactivityTimer();
+            await applyChangesAndAnalyze();
+        }
+
+        async function fetchAccount() {
+            try {
+                const res = await fetch(`${API_URL}/account`);
+                if (!res.ok) return;
+                const data = await res.json();
+                document.getElementById('prof-name').innerText = data.name;
+                document.getElementById('prof-goal').innerText = data.primary_goal;
+                document.getElementById('prof-initial').innerText = data.name.charAt(0);
+                document.getElementById('prof-inp-name').value = data.name;
+                document.getElementById('prof-inp-age').value = data.age;
+                document.getElementById('prof-inp-goal').value = data.primary_goal;
+                document.getElementById('prof-inp-challenge').value = data.current_challenge;
+                document.getElementById('prof-inp-stress').value = data.stress_level;
+                document.getElementById('prof-inp-finance').value = data.financial_confidence;
+                document.getElementById('prof-inp-work').value = data.work_type;
+                document.getElementById('prof-inp-style').value = data.decision_style;
+                document.getElementById('prof-inp-exercise-days').value = document.getElementById('inp-exercise-days').value || '';
+                document.getElementById('prof-inp-workout-mins').value = document.getElementById('inp-workout-mins').value || '';
+                document.getElementById('prof-inp-habits').value = document.getElementById('inp-habits').value || '';
+                return data;
+            } catch (e) { console.error("Account fetch failed", e); }
+        }
+
+        function editProfile() {
+            document.getElementById('prof-inp-monthly-income').value = document.getElementById('inp-income').value || '';
+            document.getElementById('prof-inp-monthly-expenses').value = document.getElementById('inp-expenses').value || '';
+            document.getElementById('prof-inp-bank-balance').value = document.getElementById('inp-idle-cash').value || '';
+            document.getElementById('prof-inp-deep-work-hours').value = document.getElementById('inp-deep').value || '';
+            document.getElementById('prof-inp-screen-time-hours').value = document.getElementById('inp-screen').value || '';
+            document.getElementById('prof-inp-sleep-hours').value = document.getElementById('inp-sleep').value || '';
+            document.getElementById('prof-inp-exercise-days').value = document.getElementById('inp-exercise-days').value || '';
+            document.getElementById('prof-inp-workout-mins').value = document.getElementById('inp-workout-mins').value || '';
+            document.getElementById('prof-inp-habits').value = document.getElementById('inp-habits').value || '';
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        async function saveProfile() {
+            const btn = document.getElementById('btn-save-prof');
+            btn.innerText = "Saving...";
+            const monthlyIncome = parseFloat(document.getElementById('prof-inp-monthly-income').value || '0');
+            const monthlyExpenses = parseFloat(document.getElementById('prof-inp-monthly-expenses').value || '0');
+            const bankBalance = parseFloat(document.getElementById('prof-inp-bank-balance').value || '0');
+            const sleepHours = parseFloat(document.getElementById('prof-inp-sleep-hours').value || '0');
+            const deepWorkHours = parseFloat(document.getElementById('prof-inp-deep-work-hours').value || '0');
+            const screenTimeHours = parseFloat(document.getElementById('prof-inp-screen-time-hours').value || '0');
+            const exerciseDays = parseFloat(document.getElementById('prof-inp-exercise-days').value || '0');
+            const workoutMins = parseFloat(document.getElementById('prof-inp-workout-mins').value || '0');
+            const habitsNotes = (document.getElementById('prof-inp-habits').value || '').trim();
+            if (!(monthlyIncome > 0) || !(monthlyExpenses >= 0) || !(bankBalance >= 0) || !(sleepHours > 0) || !(deepWorkHours >= 0) || !(screenTimeHours >= 0)) {
+                setApiStatus('Complete required onboarding fields.');
+                btn.innerText = "Save Profile";
+                return;
+            }
+            const req = {
+                name: document.getElementById('prof-inp-name').value || "User",
+                age: parseInt(document.getElementById('prof-inp-age').value) || 22,
+                primary_goal: document.getElementById('prof-inp-goal').value,
+                current_challenge: document.getElementById('prof-inp-challenge').value,
+                stress_level: parseInt(document.getElementById('prof-inp-stress').value) || 5,
+                financial_confidence: parseInt(document.getElementById('prof-inp-finance').value) || 5,
+                work_type: document.getElementById('prof-inp-work').value,
+                decision_style: document.getElementById('prof-inp-style').value
+            };
+            try {
+                await fetch(`${API_URL}/account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(req)
+                });
+                document.getElementById('inp-income').value = String(Math.round(monthlyIncome * 100) / 100);
+                document.getElementById('inp-expenses').value = String(Math.round(monthlyExpenses * 100) / 100);
+                document.getElementById('inp-idle-cash').value = String(Math.round(bankBalance * 100) / 100);
+                document.getElementById('inp-sleep').value = sleepHours.toFixed(1);
+                document.getElementById('inp-deep').value = deepWorkHours.toFixed(1);
+                document.getElementById('inp-screen').value = screenTimeHours.toFixed(1);
+                document.getElementById('inp-exercise-days').value = Number.isFinite(exerciseDays) ? exerciseDays : 0;
+                document.getElementById('inp-workout-mins').value = Number.isFinite(workoutMins) ? workoutMins : 0;
+                document.getElementById('inp-habits').value = habitsNotes;
+                onboardingComplete = true;
+                document.getElementById('profile-modal').classList.add('hidden');
+                await fetchAccount();
+                await applyChangesAndAnalyze();
+            } catch (e) {
+                alert("Failed to save profile.");
+            } finally {
+                btn.innerText = "Save Profile";
+            }
+        }
+
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const allowed = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'text/csv', 'application/vnd.ms-excel'];
+            const name = (file.name || '').toLowerCase();
+            const validExt = name.endsWith('.pdf') || name.endsWith('.csv') || name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png');
+            if (!allowed.includes(file.type) && !validExt) {
+                const statusEl = document.getElementById('upload-status');
+                statusEl.classList.remove('hidden');
+                statusEl.innerHTML = '<span class="text-rose-500 font-bold">Unsupported file type.</span>';
+                return;
+            }
+            const statusEl = document.getElementById('upload-status');
+            statusEl.classList.remove('hidden');
+            statusEl.innerHTML = `<span class="text-indigo-400 animate-pulse">Running AI OCR parsing on ${file.name}...</span>`;
+            const formData = new FormData();
+            formData.append("file", file);
+            try {
+                const res = await fetch(`${API_URL}/upload-document`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    const ext = data.extraction;
+                    const contextMem = data.context_memory || {};
+                    const contextItems = (contextMem.document_insights || []).slice(0, 5);
+                    const flags = ext.risk_flags.map(p => `<span class="text-rose-400 text-xs font-bold">• ${p}</span>`).join('<br>');
+                    const correctionUI = ext.needs_user_confirmation ? `
+                        <div class="mt-3 bg-slate-950 p-3 rounded border border-amber-500/40">
+                            <p class="text-amber-300 text-xs font-bold mb-2">Context saved. Confirm to reanalyze.</p>
+                            <button onclick="applyExtractedCorrections()" class="mt-2 w-full bg-amber-600 hover:bg-amber-500 py-2 rounded text-xs font-bold">Confirm & Reanalyze</button>
+                        </div>
+                    ` : '';
+                    statusEl.innerHTML = `
+                        <p class="text-emerald-400 font-bold mb-1">Document context interpreted successfully</p>
+                        <p class="text-xs text-slate-300">${ext.interpretation_summary || 'Insights extracted.'}</p>
+                        <p class="text-xs text-indigo-300">Type: ${ext.document_type || 'unknown'}</p>
+                        <div class="mt-2 bg-slate-950 p-2 rounded text-xs text-slate-300">${contextItems.map(i => `• ${i}`).join('<br>') || '• No insights.'}</div>
+                        <div class="mt-2 bg-slate-950 p-2 rounded">${flags}</div>
+                        ${correctionUI}
+                    `;
+                    await applyChangesAndAnalyze();
+                } else {
+                    throw new Error("Parse failed");
+                }
+            } catch (e) {
+                statusEl.innerHTML = '<span class="text-rose-500 font-bold">Error connecting to AI extraction server.</span>';
+            }
+        }
+
+        async function applyExtractedCorrections() {
+            document.getElementById('upload-status').classList.add('hidden');
+            document.getElementById('upload-status').innerHTML = '';
+            await applyChangesAndAnalyze();
+        }
+
+        async function applyChangesAndAnalyze() {
+            if (!onboardingComplete) {
+                setApiStatus('Finish onboarding first.');
+                document.getElementById('profile-modal').classList.remove('hidden');
+                return;
+            }
+            const btn = document.getElementById('btn-apply');
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Synthesizing...`;
+            const profile = getProfileState();
+            const itemizedTotal = profile.finance.itemized_sync_enabled ? parseItemizedTotal(profile.finance.itemized_expenses) : 0;
+            if (profile.finance.itemized_sync_enabled && itemizedTotal > 0) {
+                profile.finance.monthly_expenses = itemizedTotal;
+                document.getElementById('inp-expenses').value = Number(itemizedTotal).toFixed(2);
+            }
+            setApiStatus('');
+            try {
+                const res = await fetch(`${API_URL}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(profile)
+                });
+                if (!res.ok) throw new Error("API call failed");
+                const data = await res.json();
+                renderDashboard(data);
+                
+                // State Sync Fix: If a verdict is already showing, refresh it to match new data
+                if (!document.getElementById('decision-result').classList.contains('hidden')) {
+                    const currentQ = document.getElementById('question').value;
+                    if (currentQ) {
+                        console.log("Re-analyzing verdict to match updated dashboard data...");
+                        askAurora();
+                    }
+                }
+            } catch (e) {
+                console.error("Analysis Error", e);
+            } finally {
+                btn.innerHTML = `Apply Changes & Analyze`;
+            }
+        }
+
+        function renderDashboard(data) {
+            document.getElementById('simulation').innerHTML = (data.simulation_30_day || "Stable trajectory.").replace(/\n/g, '<br>');
+            const riskEl = document.getElementById('risk-score');
+            const riskTopBar = document.getElementById('risk-score-top-bar');
+            const riskTitle = document.getElementById('risk-score-title');
+            const score = data.risk_score || 0;
+            riskEl.innerText = score;
+            let colorTheme = score > 60 ? 'rose' : score > 30 ? 'amber' : 'emerald';
+            riskEl.className = `text-5xl font-black text-${colorTheme}-400`;
+            if (riskTopBar) riskTopBar.className = `absolute top-0 w-full h-1 bg-${colorTheme}-500`;
+            if (riskTitle) riskTitle.className = `text-xs font-bold text-${colorTheme}-400 uppercase tracking-widest mb-1`;
+            document.getElementById('personality-profile').innerText = data.personality_profile || "Balanced Performer";
+            const insightList = document.getElementById('risk-explanation-list');
+            const insightContainer = document.getElementById('risk-score-insights');
+            if (data.explanations && data.explanations.length > 0) {
+                insightContainer.classList.remove('hidden');
+                insightList.innerHTML = data.explanations.map(ex => `
+                    <li class="text-[10px] text-slate-300 flex gap-2 leading-tight">
+                        <span class="text-rose-500 font-bold">•</span>
+                        <span>${ex}</span>
+                    </li>
+                `).join('');
+            } else {
+                insightContainer.classList.add('hidden');
+            }
+            const optList = document.getElementById('optimization-plan');
+            if (data.optimization_plan) {
+                optList.innerHTML = data.optimization_plan.map(p => `
+                    <li class="flex gap-2 items-start text-sm text-slate-300">
+                        <span class="text-amber-500 mt-0.5 font-black">→</span> <span>${p}</span>
+                    </li>
+                `).join('');
+            }
+            const grid = document.getElementById('agent-grid');
+            if (data.finance_agent) {
+                grid.innerHTML = `
+                    ${renderMiniAgent('Finance', data.finance_agent.risk_score, data.finance_agent.risk_score < 40 ? 'emerald' : 'rose')}
+                    ${renderMiniAgent('Productive', data.productivity_agent.focus_score, data.productivity_agent.focus_score > 60 ? 'blue' : 'amber')}
+                    ${renderMiniAgent('Learning', data.learning_agent.consistency_score, 'amber')}
+                    ${renderMiniAgent('Behavior', data.behavior_agent.burnout_risk_score, data.behavior_agent.burnout_risk_score < 40 ? 'purple' : 'rose')}
+                `;
+            }
+        }
+
+        function renderMiniAgent(name, score, color) {
+            const bgs = { emerald: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400', rose: 'bg-rose-500/10 border-rose-500/30 text-rose-400', blue: 'bg-blue-500/10 border-blue-500/30 text-blue-400', amber: 'bg-amber-500/10 border-amber-500/30 text-amber-400', purple: 'bg-purple-500/10 border-purple-500/30 text-purple-400' };
+            return `<div class="rounded-xl border p-2 text-center text-xs font-bold ${bgs[color]} flex flex-col items-center justify-center h-14 shadow-inner"><span>${name}</span><span class="text-[10px] opacity-70">${score}/100</span></div>`;
+        }
+
+        async function askAurora() {
+            const questionInput = document.getElementById('question');
+            const question = questionInput.value;
+            if (!question) return;
+            const btn = document.getElementById('btn-ask');
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            setApiStatus('');
+            const profile = getProfileState();
+            try {
+                const res = await fetch(`${API_URL}/decision`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question, user_profile: profile })
+                });
+                if (!res.ok) throw new Error("Decision API failed");
+                const data = await res.json();
+                document.getElementById('decision-result').classList.remove('hidden');
+                const isNo = data.decision.includes("NO") || data.decision.includes("COURSE CORRECTION");
+                const isUnsure = data.decision.includes("UNSURE") || data.decision.includes("NEED MORE INFO") || data.decision.includes("CAUTION");
+                const decClass = isNo ? "text-rose-400" : (isUnsure ? "text-amber-400" : "text-emerald-400");
+                document.getElementById('verdict-text').innerHTML = `<span class="${decClass}">${data.decision}</span>`;
+                document.getElementById('verdict-rec').innerText = data.why;
+                document.getElementById('verdict-alt').innerText = `Alternative: ${data.alternative}`;
+                document.getElementById('verdict-pred').innerText = data.prediction;
+                const compSection = document.getElementById('comparison-mode');
+                if (data.comparison_mode) {
+                    compSection.classList.remove('hidden');
+                    document.getElementById('label-a').innerText = data.option_a_label || "Option A";
+                    document.getElementById('label-b').innerText = data.option_b_label || "Option B";
+                    document.getElementById('opt-a').innerText = `${data.option_a_score}/100`;
+                    document.getElementById('opt-b').innerText = `${data.option_b_score}/100`;
+                    document.getElementById('comp-analysis').innerText = data.comparison_analysis;
+                } else {
+                    compSection.classList.add('hidden');
+                }
+                const r = data.reasoning || {};
+                document.getElementById('verdict-reasoning').innerHTML = `
+                    <div class="bg-slate-900/80 p-3 rounded-lg text-xs text-slate-300 border-l-2 border-emerald-500"><strong>Finance:</strong> ${(r.finance || 'Analyzing...').split('.')[0]}</div>
+                    <div class="bg-slate-900/80 p-3 rounded-lg text-xs text-slate-300 border-l-2 border-blue-500"><strong>Productivity:</strong> ${(r.productivity || 'Analyzing...').split('.')[0]}</div>
+                    <div class="bg-slate-900/80 p-3 rounded-lg text-xs text-slate-300 border-l-2 border-amber-500"><strong>Learning:</strong> ${(r.learning || 'Analyzing...').split('.')[0]}</div>
+                    <div class="bg-slate-900/80 p-3 rounded-lg text-xs text-slate-300 border-l-2 border-purple-500"><strong>Behavior:</strong> ${(r.behavior || 'Analyzing...').split('.')[0]}</div>
+                `;
+            } catch (e) {
+                console.error(e);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Analyze";
+            }
+        }
+        window.addEventListener('DOMContentLoaded', async () => {
+            fetchAccount();
+        });
+    </script>
+
+</body>
+
+</html>
