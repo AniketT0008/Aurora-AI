@@ -216,7 +216,7 @@ def _handle_purchase_decision(q, income, expenses, idle_cash, monthly_net, runwa
         "why": why,
         "alternative": alt,
         "prediction": prediction,
-        "life_instability_index": inst,
+
         "finance_agent": f,
         "productivity_agent": agents['productivity'],
         "learning_agent": agents['learning'],
@@ -333,7 +333,7 @@ def generate_deterministic_decision(question, agents, profile_data):
         "why": final_why,
         "alternative": final_alt,
         "prediction": prediction,
-        "life_instability_index": inst,
+
         "finance_agent": f,
         "productivity_agent": agents['productivity'],
         "learning_agent": agents['learning'],
@@ -457,7 +457,7 @@ def generate_decision(question, profile_data):
             "why": ai_data.get("why", "Based on multi-agent synthesis."),  
             "alternative": ai_data.get( "alternative", "Review core bottlenecks." ),
             "prediction": ai_data.get("prediction", generate_prediction_text(agents, monthly_net, runway)),
-            "life_instability_index": agents['instability'],
+
             "finance_agent": agents['finance'],
             "productivity_agent": agents['productivity'],
             "learning_agent": agents['learning'],
@@ -482,37 +482,18 @@ def run_full_analysis(profile_data):
     runway = round(idle_cash / expenses, 1) if expenses > 0 else 99.0
     agent_summary = {
         "instability": agents['instability'],
-        "finance": {
-            "status": agents['finance']['status'],
-            "income": int(income),
-            "expenses": int(expenses),
-            "idle_cash": int(idle_cash),
-            "monthly_net": int(monthly_net),
-            "runway_months": runway,
-            "savings_rate": agents['finance'].get('savings_rate', 0)
-        },
-        "behavior": {
-            "burnout_risk_score": agents['behavior']['burnout_risk_score'],
-            "burnout_risk_level": agents['behavior']['burnout_risk_level'],
-            "sleep_hours": safe_float(profile_data.get('behavior', {}).get('sleep_hours_avg', 8)),
-            "energy_cycles": agents['behavior']['energy_cycles']
-        },
-        "productivity": {
-            "focus_score": agents['productivity']['focus_score'],
-            "deep_work_hours": safe_float(profile_data.get('productivity', {}).get('deep_work_hours', 0)),
-            "screen_time": safe_float(profile_data.get('productivity', {}).get('daily_screen_time_hours', 6))
-        },
-        "learning": {
-            "consistency_score": agents['learning']['consistency_score'],
-            "hours_per_week": safe_float(profile_data.get('learning', {}).get('hours_per_week', 0)),
-            "focus": profile_data.get('learning', {}).get('current_focus', 'General')
-        }
+        "finance": agents['finance']['status'],
+        "monthly_net": int(monthly_net),
+        "runway": runway,   
+        "savings_rate": agents['finance'].get('savings_rate', 0),
+        "behavior": agents['behavior']['burnout_risk_level'],
+        "productivity": agents['productivity']['focus_score']
     }
     ai_data  = gemini_service.get_full_analysis(agent_summary)
     if ai_data: 
         return {
-            "life_summary": f"Life Instability: {agents['instability']}/100.",
-            "risk_score": agents['instability'],
+            "life_summary": "System analysis complete.",
+
             "finance_agent": agents['finance'],  
             "productivity_agent": agents['productivity'],  
             "learning_agent": agents['learning'],
@@ -523,8 +504,8 @@ def run_full_analysis(profile_data):
             "explanations": agents['explanations']
         }   
     return {
-        "life_summary": f"Life Instability: {agents['instability']}/100.",
-        "risk_score": agents['instability'],
+        "life_summary": "System analysis complete.",
+
         "finance_agent": agents['finance'],
         "productivity_agent": agents['productivity'],
         "learning_agent": agents['learning'],

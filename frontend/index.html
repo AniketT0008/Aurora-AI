@@ -250,23 +250,8 @@
         <div class="lg:col-span-6 flex flex-col gap-6">
 
             <div class="grid grid-cols-2 gap-4">
-                <div
-                    class="glass rounded-2xl p-5 flex flex-col justify-center items-center text-center relative overflow-hidden">
-                    <div id="risk-score-top-bar" class="absolute top-0 w-full h-1 bg-emerald-500"></div>
-                    <h3 id="risk-score-title" class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1">
-                        Life Instability Index</h3>
-                    <div class="flex items-baseline gap-1">
-                        <span id="risk-score" class="text-5xl font-black text-emerald-400">0</span><span
-                            class="text-sm text-slate-400">/100</span>
-                    </div>
+                <!-- Index Tracking Removed -->
 
-                    <div id="risk-score-insights"
-                        class="hidden mt-3 pt-3 border-t border-slate-700/50 w-full text-left">
-                        <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-2">Primary Risk
-                            Drivers</p>
-                        <ul id="risk-explanation-list" class="space-y-1.5"></ul>
-                    </div>
-                </div>
                 <div
                     class="glass rounded-2xl p-5 flex flex-col justify-center items-center text-center relative overflow-hidden">
                     <div class="absolute top-0 w-full h-1 bg-purple-500"></div>
@@ -367,11 +352,18 @@
                     <div
                         class="flex gap-2 bg-slate-900 border border-slate-700 rounded-2xl p-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition">
                         <input id="question" type="text"
-                            placeholder="e.g., Should I buy a new laptop? / Go out vs Study?"
+                            placeholder="Type a question or reply to Aurora..."
                             class="flex-1 bg-transparent px-4 py-3 focus:outline-none text-white placeholder-slate-500">
+                        <button onclick="askAurora(true)" title="Start New Topic"
+                            class="p-3 text-slate-500 hover:text-indigo-400 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+
                         <button onclick="askAurora()" id="btn-ask"
                             class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold transition shadow-md disabled:opacity-50">
-                            Analyze
+                            Ask Aurora
                         </button>
                     </div>
 
@@ -624,8 +616,9 @@
 
         function setQuestion(q) {
             document.getElementById('question').value = q;
-            askAurora();
+            askAurora(true); // Presets always start a new topic
         }
+
 
         function startApp() {
             document.getElementById('onboarding-modal').style.display = 'none';
@@ -845,14 +838,7 @@
                 const data = await res.json();
                 renderDashboard(data);
                 
-                // State Sync Fix: If a verdict is already showing, refresh it to match new data
-                if (!document.getElementById('decision-result').classList.contains('hidden')) {
-                    const currentQ = document.getElementById('question').value;
-                    if (currentQ) {
-                        console.log("Re-analyzing verdict to match updated dashboard data...");
-                        askAurora();
-                    }
-                }
+
             } catch (e) {
                 console.error("Analysis Error", e);
             } finally {
@@ -866,15 +852,16 @@
             const riskTopBar = document.getElementById('risk-score-top-bar');
             const riskTitle = document.getElementById('risk-score-title');
             const score = data.risk_score || 0;
-            riskEl.innerText = score;
+            if (riskEl) riskEl.innerText = score;
             let colorTheme = score > 60 ? 'rose' : score > 30 ? 'amber' : 'emerald';
-            riskEl.className = `text-5xl font-black text-${colorTheme}-400`;
+            if (riskEl) riskEl.className = `text-5xl font-black text-${colorTheme}-400`;
             if (riskTopBar) riskTopBar.className = `absolute top-0 w-full h-1 bg-${colorTheme}-500`;
             if (riskTitle) riskTitle.className = `text-xs font-bold text-${colorTheme}-400 uppercase tracking-widest mb-1`;
-            document.getElementById('personality-profile').innerText = data.personality_profile || "Balanced Performer";
+            const personalityEl = document.getElementById('personality-profile');
+            if (personalityEl) personalityEl.innerText = data.personality_profile || "Balanced Performer";
             const insightList = document.getElementById('risk-explanation-list');
             const insightContainer = document.getElementById('risk-score-insights');
-            if (data.explanations && data.explanations.length > 0) {
+            if (data.explanations && data.explanations.length > 0 && insightContainer) {
                 insightContainer.classList.remove('hidden');
                 insightList.innerHTML = data.explanations.map(ex => `
                     <li class="text-[10px] text-slate-300 flex gap-2 leading-tight">
@@ -913,22 +900,56 @@
             return `<div class="rounded-xl border p-2 text-center text-xs font-bold ${bgs[color]} flex flex-col items-center justify-center h-14 shadow-inner"><span>${name}</span><span class="text-[10px] opacity-70">${score}/100</span></div>`;
         }
 
-        async function askAurora() {
+        async function askAurora(resetHistory = false) {
             const questionInput = document.getElementById('question');
             const question = questionInput.value.trim();
+            
+            if (resetHistory && !question) {
+                // Just reset history and clear UI if no question
+                const btn = document.getElementById('btn-ask');
+                btn.disabled = true;
+                setApiStatus('Resetting conversation...');
+                try {
+                    await fetch(`${API_URL}/decision`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ question: 'RESET_HISTORY', reset_history: true })
+                    });
+                    document.getElementById('decision-result').classList.add('hidden');
+                    questionInput.value = '';
+                    setApiStatus('Conversation reset.');
+                    setTimeout(() => setApiStatus(''), 2000);
+                } catch (e) {}
+                btn.disabled = false;
+                btn.innerText = "Ask Aurora";
+                return;
+            }
             if (!question) return;
             lastQuestionAsked = question.split('\n[User Clarification]:')[0]; // keep track of the base question
             const btn = document.getElementById('btn-ask');
+            
+            // Capture question before clearing input
+            const currentQuestion = question;
+            questionInput.value = ''; 
+            
+            // Show loading
+            document.getElementById('decision-result').classList.add('hidden');
             btn.disabled = true;
             btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
             setApiStatus('');
+
             const profile = getProfileState();
             try {
                 const res = await fetch(`${API_URL}/decision`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question, user_profile: profile })
+                    body: JSON.stringify({ 
+                        question: currentQuestion, 
+                        user_profile: profile,
+                        reset_history: resetHistory
+                    })
                 });
+
                 if (!res.ok) throw new Error("Decision API failed");
                 const data = await res.json();
                 document.getElementById('decision-result').classList.remove('hidden');
@@ -995,7 +1016,7 @@
                 console.error(e);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Analyze";
+                btn.innerText = "Ask Aurora";
             }
         }
 

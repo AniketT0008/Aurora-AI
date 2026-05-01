@@ -98,7 +98,11 @@ class GeminiService:
             "11. EXCEPTIONS: If the user indicates an emergency, special occasion, or a once-in-a-lifetime opportunity, factor that into your logic. Sometimes non-optimal financial/productivity decisions are logical human decisions.\n"
             "12. ADAPTIVE LOGIC FOR GRAY AREAS: Life is full of gray areas that cannot be solved with rigid rules (e.g., investing in a risky startup vs saving, taking a low-paying dream job vs high-paying grind, or deciding when to rest vs push harder). DO NOT apply a one-size-fits-all approach. If ANY decision depends heavily on unprovided personal context (like their risk tolerance, their hidden timeline, or their recent history like when they last took a break), you MUST output 'UNSURE' or 'NEED MORE INFO'. Use the 'why' field to ask the user the exact missing variable you need to make the correct personalized decision."
          )
-        prompt = f"System Metrics: {json.dumps(agent_data)}\nUser Question: {user_query}\nReturn structured JSON with 'decision', 'why', 'alternative', and 'prediction'."
+        history_str = ""
+        if agent_data.get("history"):
+            history_str = "\nConversation History:\n" + "\n".join([f"{m['role']}: {m['content']}" for m in agent_data["history"]])
+            
+        prompt = f"System Metrics: {json.dumps(agent_data)}\n{history_str}\nUser Question: {user_query}\nReturn structured JSON with 'decision', 'why', 'alternative', and 'prediction'."
         return self._call_gemini_json(prompt, system_instruction=system_prompt)
   
     def get_full_analysis(self, agent_data):    

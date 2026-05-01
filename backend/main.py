@@ -52,11 +52,10 @@ OCR_ENGINE = None
 DEFAULT_PROFILE_INCOME  = 5100.0
 DEFAULT_PROFILE_EXPENSES  = 4100.0
 DOCUMENT_CONTEXT_MEMORY = {  
-    "document_insights": [],
-    "document_type": "none",
-    "source": "none",
     "last_filename": "",
 }
+CONVERSATION_HISTORY = []
+
    
 if os.path.exists(PROFILE_DATA_PATH):
     try: os.remove(PROFILE_DATA_PATH)
@@ -385,9 +384,10 @@ def save_data(path, data):
     with open(path, "w") as f: 
         json.dump(data, f)
 
-class DecisionRequest( BaseModel ):
+class DecisionRequest(BaseModel):
     question: str
-    user_profile: Optional[dict] = None   
+    user_profile: Optional[dict] = None
+    reset_history: Optional[bool] = False
 
 class ProfileUpdateRequest( BaseModel ):
     name: str 
@@ -444,7 +444,9 @@ reset_session_data()
 
 @app.get("/api/reset")  
 async def manual_reset():
+    global CONVERSATION_HISTORY
     reset_session_data(  )
+    CONVERSATION_HISTORY = []
     return {"status": "success", "message": "Session data wiped."}    
 
 @app.post("/api/account")  
@@ -598,11 +600,24 @@ def analyze(profile: dict  = Body(None)):
 
 @app.post( "/api/decision" )
 def decision(req: DecisionRequest):
+    global CONVERSATION_HISTORY
+    if req.reset_history:
+        CONVERSATION_HISTORY = []
     data = req.user_profile if req.user_profile else load_data(PROFILE_DATA_PATH, {})
     account_data = load_data(USER_PROFILE_PATH, {})
     data["account"] = account_data
-    data["document_context"] = DOCUMENT_CONTEXT_MEMORY 
+    data["document_context"] = DOCUMENT_CONTEXT_MEMORY
+    data["history"] = CONVERSATION_HISTORY
     result = generate_decision(req.question, data)
+    
+    # Store in history
+    CONVERSATION_HISTORY.append({"role": "user", "content": req.question})
+    CONVERSATION_HISTORY.append({"role": "assistant", "content": f"Verdict: {result.get('decision')}. {result.get('why')}"})
+    if len(CONVERSATION_HISTORY) > 10:
+        CONVERSATION_HISTORY = CONVERSATION_HISTORY[-10:]
+        
+    result.pop("life_instability_index", None) # Remove index tracking
+
     q = req.question.lower()
     if " vs " in q or " or " in q or result.get("decision") in ["NO", "CAUTION", "STUDY", "TAKE A BREAK"]:  
         result["comparison_mode"] = True
