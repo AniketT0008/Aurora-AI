@@ -250,7 +250,14 @@
         <div class="lg:col-span-6 flex flex-col gap-6">
 
             <div class="grid grid-cols-1 gap-4">
-                <!-- Index Tracking Removed -->
+                <div class="glass-dark rounded-2xl p-6 flex flex-col justify-center items-center text-center relative overflow-hidden">
+                    <div id="risk-score-top-bar" class="absolute top-0 w-full h-1 bg-emerald-500"></div>
+                    <h3 id="risk-score-title" class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1">Life Instability Index</h3>
+                    <div id="risk-score" class="text-5xl font-black text-emerald-400">0</div>
+                    <div id="risk-score-insights" class="mt-4 w-full hidden">
+                        <ul id="risk-explanation-list" class="space-y-1 text-left border-t border-slate-700/50 pt-3"></ul>
+                    </div>
+                </div>
 
                 <div
                     class="glass rounded-2xl p-5 flex flex-col justify-center items-center text-center relative overflow-hidden">
@@ -401,7 +408,6 @@
             <div class="glass rounded-2xl p-5 flex-1 relative overflow-hidden">
                 <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
-                    Instability Trend (Local)
                 </h3>
                 <div class="relative h-32 w-full">
                     <canvas id="riskChart"></canvas>

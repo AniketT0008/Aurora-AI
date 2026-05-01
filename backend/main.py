@@ -616,7 +616,7 @@ def decision(req: DecisionRequest):
     if len(CONVERSATION_HISTORY) > 10:
         CONVERSATION_HISTORY = CONVERSATION_HISTORY[-10:]
         
-    result.pop("life_instability_index", None) # Remove index tracking
+    # result.pop("life_instability_index", None) # Removed to keep index tracking
 
     q = req.question.lower()
     if " vs " in q or " or " in q or result.get("decision") in ["NO", "CAUTION", "STUDY", "TAKE A BREAK"]:  

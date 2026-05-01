@@ -333,7 +333,7 @@ def generate_deterministic_decision(question, agents, profile_data):
         "why": final_why,
         "alternative": final_alt,
         "prediction": prediction,
-
+        "risk_score": inst,
         "finance_agent": f,
         "productivity_agent": agents['productivity'],
         "learning_agent": agents['learning'],
@@ -457,7 +457,7 @@ def generate_decision(question, profile_data):
             "why": ai_data.get("why", "Based on multi-agent synthesis."),  
             "alternative": ai_data.get( "alternative", "Review core bottlenecks." ),
             "prediction": ai_data.get("prediction", generate_prediction_text(agents, monthly_net, runway)),
-
+            "risk_score": agents['instability'],
             "finance_agent": agents['finance'],
             "productivity_agent": agents['productivity'],
             "learning_agent": agents['learning'],
@@ -493,7 +493,7 @@ def run_full_analysis(profile_data):
     if ai_data: 
         return {
             "life_summary": "System analysis complete.",
-
+            "risk_score": agents['instability'],
             "finance_agent": agents['finance'],  
             "productivity_agent": agents['productivity'],  
             "learning_agent": agents['learning'],
@@ -505,7 +505,7 @@ def run_full_analysis(profile_data):
         }   
     return {
         "life_summary": "System analysis complete.",
-
+        "risk_score": agents['instability'],
         "finance_agent": agents['finance'],
         "productivity_agent": agents['productivity'],
         "learning_agent": agents['learning'],
@@ -514,4 +514,4 @@ def run_full_analysis(profile_data):
         "optimization_plan": generate_plan(agents, profile_data),  
         "personality_profile": get_personality(agents),   
         "explanations": agents['explanations']
-    } 
+    }
