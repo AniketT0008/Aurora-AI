@@ -232,7 +232,14 @@ def _handle_purchase_decision(q, income, expenses, idle_cash, monthly_net, runwa
     }
 
 def generate_deterministic_decision(question, agents, profile_data):
-    q = str(question or "").lower()
+    full_q = str(question or "").lower()
+    q = full_q
+    clarification = ""
+    if "[user clarification]:" in full_q:
+        parts = full_q.split("[user clarification]:")
+        q = parts[0].strip()
+        clarification = parts[1].strip()
+
     f = agents['finance']
     b = agents['behavior']
     inst = agents['instability']
@@ -288,9 +295,19 @@ def generate_deterministic_decision(question, agents, profile_data):
             alts.append("Implement 90-minute deep work blocks with 30-minute recovery cycles.")
         else:
             if agents['productivity']['focus_score'] > 80 and b['burnout_risk_score'] < 30 and f['risk_score'] < 30:
-                decisions.append("UNSURE")
-                whys.append(f"Your system is highly optimized (instability {inst}/100), but before I decide: when was the last time you took a real break?")
-                alts.append("If it's been a while, you should REST. If you just had a break, keep the momentum and STUDY/WORK.")
+                if clarification:
+                    if any(w in clarification for w in ["long", "while", "never", "month", "week", "days", "yes", "ago"]):
+                        decisions.append("REST")
+                        whys.append("You confirmed it has been a long time since your last break. Even with optimal metrics, proactive recovery is the only way to sustain this 'High Performer' state long-term.")
+                        alts.append("Take the weekend off or schedule a 'low-stimulus' day immediately.")
+                    else:
+                        decisions.append("STUDY")
+                        whys.append("Since you are well-rested and your system is optimized, you are in a rare 'Flow State' window. This is the best time for aggressive learning.")
+                        alts.append("Target a 4-hour deep work block today to maximize this momentum.")
+                else:
+                    decisions.append("UNSURE")
+                    whys.append(f"Your system is highly optimized (instability {inst}/100), but before I decide: when was the last time you took a real break?")
+                    alts.append("If it's been a while, you should REST. If you just had a break, keep the momentum and STUDY/WORK.")
             else:
                 decisions.append("STUDY" if (is_choice or is_open) else "YES")
                 whys.append(f"Your system is balanced (instability {inst}/100). Lean into deep work — you have the biological and financial runway for it.")
@@ -311,9 +328,11 @@ def generate_deterministic_decision(question, agents, profile_data):
             final_why = f"Your metrics are healthy (instability {inst}/100), but I need more details to evaluate this specific request. Can you clarify?"
             final_alt = "Please try rephrasing your question or adding specific constraints like price or time."
     else:
-        # Prioritize specific choices (e.g., STUDY, SLEEP) over generic YES/NO
-        specific_choices = [d for d in decisions if d not in ["YES", "NO", "CAUTION", "COURSE CORRECTION"]]
-        if specific_choices:
+        # Prioritize specific choices over generic YES/NO
+        specific_choices = [d for d in decisions if d not in ["YES", "NO", "CAUTION", "COURSE CORRECTION", "UNSURE"]]
+        if "UNSURE" in decisions and not specific_choices:
+            final_decision = "UNSURE"
+        elif specific_choices:
             final_decision = specific_choices[0]
         elif "NO" in decisions:
             final_decision = "NO"
