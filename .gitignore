@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Data (Private profiles)
+backend/data/*.json
+
+# Logs
+*.log
+
+# Secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db
