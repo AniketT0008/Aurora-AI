@@ -1,90 +1,93 @@
-# Aurora AI — Autonomous Life Strategist
+# Aurora AI — Decision Intelligence System
 
 ![Aurora AI demo](demos/aurora-ai-demo.gif)
 
-Aurora AI — Decision Intelligence System
+Aurora AI helps you make better life choices using data from across your daily life. Instead of just tracking information, it analyzes your finances, productivity, and behavior to determine whether a decision is actually beneficial long-term.
 
-Aurora AI is a decision‑intelligence system that helps you make better life choices using data from across your daily life. Instead of just tracking information, it analyzes your finances, productivity, and behavior to determine whether a decision is actually beneficial in the long run.
+**Live demo:** [https://aurora-ai-o2f6.onrender.com/](https://aurora-ai-o2f6.onrender.com/)
 
-Live Demo: https://aurora-ai-o2f6.onrender.com/
+---
 
-What Aurora Does
+## What Aurora does
 
-Aurora allows users to input their current state through manual entry or by uploading documents such as bank statements, expense reports, or habit logs.
+Users input their current state through manual entry or by uploading documents (bank statements, expense reports, habit logs), then ask real-world questions like:
 
-Users can then ask real‑world questions like:
-
-"Should I buy this $40,000 car?"
-"Can I afford to take a pay cut for my dream job?"
-"Should I work tonight or take a break?"
+- "Should I buy this $40,000 car?"
+- "Can I afford to take a pay cut for my dream job?"
+- "Should I work tonight or take a break?"
 
 Aurora performs structured reasoning by:
 
-Extracting financial and behavioral signals from user data
+- Extracting financial and behavioral signals from user data
+- Evaluating stability using a custom Life Instability Index
+- Simulating short-term outcomes of decisions
+- Identifying risks such as financial strain, burnout, or loss of progress
 
-Evaluating stability using a custom Life Instability Index
+The system outputs a clear **Yes / No / Caution** decision, plus reasoning, risks, and suggested alternatives. It can also ask follow-up clarification questions when input is incomplete.
 
-Simulating short‑term outcomes of decisions
+---
 
-Identifying risks such as financial strain, burnout, or loss of progress
+## How it works — multi-agent decision system
 
-The system outputs a clear Yes / No / Caution decision, along with reasoning, risks, and suggested alternatives. It can also ask follow‑up clarification questions when input is incomplete.
+Aurora uses specialized AI agents that evaluate decisions from different perspectives:
 
-How It Works — Multi‑Agent Decision System
+| Agent | Role |
+|-------|------|
+| **Finance Agent** | Analyzes income, expenses, savings, and financial risk |
+| **Productivity Agent** | Evaluates focus, workload, and consistency toward goals |
+| **Bio-Behavior Agent** | Tracks energy levels, recovery, and burnout risk |
 
-Aurora uses a multi‑agent architecture where specialized AI components evaluate decisions from different perspectives:
+Each agent contributes an independent perspective. A central orchestrator combines them into a final structured output — more like a decision engine than a chatbot.
 
-Finance Agent
-Analyzes income, expenses, savings, and financial risk.
+---
 
-Productivity Agent
-Evaluates focus, workload, and consistency toward goals.
+## Tech stack
 
-Bio‑Behavior Agent
-Tracks energy levels, recovery, and burnout risk.
+| Layer | Tools |
+|-------|-------|
+| Frontend | HTML, CSS, Tailwind CSS, JavaScript |
+| Backend | FastAPI, Python, Pydantic, Uvicorn |
+| AI | Gemini API (multi-agent orchestration) |
+| Data | NumPy, OpenCV, RapidOCR, PyPDF |
+| Deploy | Render |
 
-Each agent independently evaluates the decision and contributes a perspective. A central orchestrator combines these into a final structured output, making Aurora behave more like a decision engine than a traditional chatbot.
+---
 
-Tech Stack
+## Setup
 
-Frontend: HTML, CSS, TailwindCSS, JavaScript
-Backend: FastAPI, Python
-AI Layer: Gemini API (multi‑agent orchestration)
-Data Processing: NumPy, OpenCV, RapidOCR, PyPDF
-Deployment: Render
-Other: Pydantic, Uvicorn
+### Option 1 — Quick start (Windows)
 
-Setup
+1. Run `start_aurora.bat`
+2. Add your Gemini API key to `backend/.env`
 
-Option 1 — Quick Start (Windows)
+### Option 2 — Manual setup
 
-Run:
-start_aurora.bat
+**Backend**
 
-Add your Gemini API key to:
-backend/.env
-
-Option 2 — Manual Setup
-
-Backend:
+```bash
 cd backend
 pip install -r requirements.txt
 python main.py
+```
 
-Frontend:
-Open frontend/index.html
+**Frontend**
 
-Why Aurora Is Different
+Open `frontend/index.html` in your browser.
 
-Most tools track isolated metrics like money, habits, or productivity.
-Aurora connects these domains and answers a harder question:
+---
 
-"What should I actually do next?"
+## Why Aurora is different
 
-It transforms raw data into structured decisions, acting as a personal decision engine rather than a dashboard.
+Most tools track isolated metrics like money, habits, or productivity. Aurora connects those domains and answers a harder question:
 
-Future Improvements
+> What should I actually do next?
 
-Integration with real‑time data (calendars, banking, wearables)
+It turns raw data into structured decisions — a personal decision engine, not just a dashboard.
 
-Improved long‑term prediction and scenario simulation
+---
+
+## Future improvements
+
+- Integration with real-time data (calendars, banking, wearables)
+- Improved long-term prediction and scenario simulation
+- Personalized learning based on user behavior over time
