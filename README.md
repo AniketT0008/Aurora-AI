@@ -85,6 +85,7 @@ More advanced adaptive questioning for deeper reasoning
 
 Screen recording of the onboarding + profile flow:
 
-https://github.com/AniketT0008/Aurora-AI/blob/main/demos/aurora-ai-demo.mp4
+https://github.com/AniketT0008/Aurora-AI/blob/main/demos/aurora-ai-demo.gif
 
 Live app: https://aurora-ai-o2f6.onrender.com/
+
