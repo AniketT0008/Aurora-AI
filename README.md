@@ -1,20 +1,18 @@
-# Aurora AI demo
+# Aurora AI — Autonomous Life Strategist
 
 ![Aurora AI demo](demos/aurora-ai-demo.gif)
 
-### Aurora AI â€” Autonomous Life Strategist
-
 Aurora AI is a decision intelligence system that helps you make better life choices using data from across your daily life. Instead of just tracking information, it analyzes your finances, productivity, and behavior to determine whether a decision is actually beneficial in the long run.
 
-ðŸŒ Live Demo: https://aurora-ai-o2f6.onrender.com/
+≡ƒîÉ Live Demo: https://aurora-ai-o2f6.onrender.com/
 
-ðŸš€ What it does
+≡ƒÜÇ What it does
 
 Aurora allows users to input their current state through manual entry or by uploading documents such as bank statements, expense reports, or habit logs. Users can then ask real-world questions like:
 
-â€œShould I buy this $40,000 car?â€
-â€œCan I afford to take a pay cut for my dream job?â€
-â€œShould I work tonight or take a break?â€
+ΓÇ£Should I buy this $40,000 car?ΓÇ¥
+ΓÇ£Can I afford to take a pay cut for my dream job?ΓÇ¥
+ΓÇ£Should I work tonight or take a break?ΓÇ¥
 
 Instead of generating generic responses, Aurora performs structured reasoning by:
 
@@ -27,7 +25,7 @@ The system outputs a clear Yes / No / Caution decision, along with reasoning, ri
 
 Aurora can also ask follow-up clarification questions when input is incomplete, improving the quality and accuracy of its decisions.
 
-ðŸ§  How it works â€” Multi-Agent Decision System
+≡ƒºá How it works ΓÇö Multi-Agent Decision System
 
 Aurora is powered by a multi-agent architecture where specialized AI components evaluate decisions from different perspectives:
 
@@ -42,15 +40,15 @@ Each agent independently evaluates the decision and contributes a perspective. T
 
 This creates a system that behaves more like a decision engine than a traditional chatbot.
 
-âš™ï¸ Tech Stack
+ΓÜÖ∩╕Å Tech Stack
 Frontend: HTML, CSS, TailwindCSS, JavaScript
 Backend: FastAPI, Python
 AI Layer: Gemini API (multi-agent orchestration)
 Data Processing: NumPy, OpenCV, RapidOCR, PyPDF
 Deployment: Render
 Other: Pydantic, Uvicorn
-ðŸ› ï¸ Setup
-Option 1 â€” Quick Start (Windows)
+≡ƒ¢á∩╕Å Setup
+Option 1 ΓÇö Quick Start (Windows)
 
 Run:
 
@@ -59,7 +57,7 @@ start_aurora.bat
 Make sure your Gemini API key is added in:
 
 backend/.env
-Option 2 â€” Manual Setup
+Option 2 ΓÇö Manual Setup
 Backend
 cd backend
 pip install -r requirements.txt
@@ -69,17 +67,17 @@ Frontend
 Open:
 
 frontend/index.html
-ðŸŽ¯ Why Aurora is different
+≡ƒÄ» Why Aurora is different
 
 Most tools track isolated metrics like money, habits, or productivity.
 
 Aurora connects these domains and answers a harder question:
 
-â€œWhat should I actually do next?â€
+ΓÇ£What should I actually do next?ΓÇ¥
 
-It transforms raw data into structured decisions, making it more than a dashboard â€” it acts as a personal decision engine.
+It transforms raw data into structured decisions, making it more than a dashboard ΓÇö it acts as a personal decision engine.
 
-ðŸ”® Future Improvements
+≡ƒö« Future Improvements
 Integration with real-time data (calendars, banking, wearables)
 Improved long-term prediction and scenario simulation
 Personalized learning based on user behavior over time
