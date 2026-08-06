@@ -1,4 +1,8 @@
-﻿### Aurora AI â€” Autonomous Life Strategist
+# Aurora AI demo
+
+![Aurora AI demo](demos/aurora-ai-demo.gif)
+
+### Aurora AI â€” Autonomous Life Strategist
 
 Aurora AI is a decision intelligence system that helps you make better life choices using data from across your daily life. Instead of just tracking information, it analyzes your finances, productivity, and behavior to determine whether a decision is actually beneficial in the long run.
 
@@ -80,12 +84,3 @@ Integration with real-time data (calendars, banking, wearables)
 Improved long-term prediction and scenario simulation
 Personalized learning based on user behavior over time
 More advanced adaptive questioning for deeper reasoning
-
-## Demo
-
-Screen recording of the onboarding + profile flow:
-
-https://github.com/AniketT0008/Aurora-AI/blob/main/demos/aurora-ai-demo.gif
-
-Live app: https://aurora-ai-o2f6.onrender.com/
-
