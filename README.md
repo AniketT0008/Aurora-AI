@@ -1,5 +1,7 @@
 # Aurora AI — Decision Intelligence System
 
+**Hackathon project.**
+
 ![Aurora AI demo](demos/aurora-ai-demo.gif)
 
 Aurora AI helps you make better life choices using data from across your daily life. Instead of just tracking information, it analyzes your finances, productivity, and behavior to determine whether a decision is actually beneficial long-term.
